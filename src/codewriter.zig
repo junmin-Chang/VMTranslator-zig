@@ -11,6 +11,16 @@ pub const CodeWriter = struct {
     pub fn init(file: std.fs.File) CodeWriter {
         return CodeWriter{ .writer = std.io.bufferedWriter(file.writer()) };
     }
+    pub fn write_init(self: *CodeWriter) !void {
+        const str =
+            \\@256
+            \\D=A
+            \\@SP
+            \\M=D
+            \\
+        ;
+        try self.writer.writer().print(str, .{});
+    }
     pub fn write_arithmetic(self: *CodeWriter, command: []const u8) !void {
         if (std.mem.eql(u8, command, "add")) {
             const str =
@@ -154,6 +164,7 @@ test "codewrite" {
     defer asm_file.close();
 
     var codewriter = CodeWriter.init(asm_file);
+    try codewriter.write_init();
 
     while (parser.hasMoreLine()) {
         try parser.advance();
@@ -180,6 +191,10 @@ test "codewrite" {
     defer actual_asm.close();
 
     const expected_asm =
+        \\@256
+        \\D=A
+        \\@SP
+        \\M=D
         \\@10
         \\D=A
         \\@SP
