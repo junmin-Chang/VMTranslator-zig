@@ -1,6 +1,6 @@
 const std = @import("std");
 const expect = std.testing.expect;
-pub const CommandType = enum { C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_RETURN, C_CALL };
+pub const CommandType = enum { C_ARITHMETIC, C_PUSH, C_POP, C_LABEL, C_GOTO, C_IF, C_FUNCTION, C_RETURN, C_CALL, NONE };
 const ParsingError = error{ ARG1_ERROR, ARG2_ERROR, PARSE_INT_ERROR };
 
 pub const Parser = struct {
@@ -27,6 +27,7 @@ pub const Parser = struct {
                 self.line_len = line.len;
             } else {
                 self.is_eof = true;
+                self.command_type = .NONE;
                 return;
             }
 
@@ -80,7 +81,6 @@ test "parse" {
     const cwd = std.fs.cwd();
     const file: std.fs.File = try cwd.openFile("test.vm", .{});
     defer file.close();
-
     var parser = Parser.init(file);
     try parser.advance();
     try expect(parser.command_type == .C_PUSH);
