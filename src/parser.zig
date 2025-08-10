@@ -62,7 +62,7 @@ pub const Parser = struct {
     pub fn get_commandtype(self: Parser) CommandType {
         return self.command_type;
     }
-    pub fn get_arg1(self: Parser) ![]u8 {
+    pub fn get_arg1(self: Parser) ![]const u8 {
         if (self.command_type == .C_RETURN) {
             return ParsingError.ARG1_ERROR;
         }
